@@ -9,5 +9,6 @@
     <string name="main_timer_stop">Stop</string>
     <string name="main_timer_insertLocation">Insert location</string>
     <string name="main_timer_locationHint">Mata</string>
+    <string name="main_timer_locationEmpty">Location can\'t be empty</string>
 
 </resources>

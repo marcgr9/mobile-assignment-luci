@@ -1,6 +1,8 @@
 package ro.marc.meditation.fragment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +10,8 @@ import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ro.marc.meditation.MainActivity
 import ro.marc.meditation.MainActivityVM
+import ro.marc.meditation.R
+import ro.marc.meditation.Utils
 import ro.marc.meditation.databinding.FragMainTimerBinding
 
 
@@ -18,11 +22,37 @@ class MainTimer: Fragment() {
     private var _binding: FragMainTimerBinding? = null
     private val binding get() = _binding!!
 
+    enum class StopwatchState {
+        NOT_STARTED,
+        ONGOING,
+        FINISHED,
+    }
+
+    private var stopwatchState: StopwatchState = StopwatchState.NOT_STARTED
+
+    private var location: String = ""
+    private var seconds: Int = 0
+
+    private var stopwatchHandler: Handler? = null
+
+    private var stopwatch = object : Runnable {
+        override fun run() {
+            try {
+                seconds += 1
+                binding.insertLocation.text = formatSeconds()
+            } finally {
+                stopwatchHandler!!.postDelayed(this, 1000)
+            }
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         activity = requireActivity() as MainActivity
         val injectedViewModel by sharedViewModel<MainActivityVM>()
         vm = injectedViewModel
         _binding = FragMainTimerBinding.inflate(inflater, container, false)
+
+        configureLayoutFor()
 
         return binding.root
     }
@@ -32,5 +62,72 @@ class MainTimer: Fragment() {
 
         _binding = null
     }
+
+    private fun startTimer() {
+        if (binding.input.text.toString().trim().isEmpty()) {
+            Utils.toast(activity, R.string.main_timer_locationEmpty)
+            return
+        }
+
+        binding.button.apply {
+            text = activity.getString(R.string.main_timer_stop)
+            setOnClickListener {
+
+                this.text = activity.getString(R.string.main_timer_start)
+                this.setOnClickListener {
+                    startTimer()
+                }
+            }
+        }
+
+        stopwatchHandler = Handler(Looper.getMainLooper())
+        stopwatch.run()
+
+        stopwatchState = StopwatchState.ONGOING
+    }
+
+    private fun stopTimer() {
+        stopwatchHandler?.removeCallbacks(stopwatch)
+        stopwatchHandler = null
+        println(seconds)
+        seconds = 0
+
+        stopwatchState = StopwatchState.NOT_STARTED
+    }
+
+    private fun configureLayoutFor() {
+        when (stopwatchState) {
+            StopwatchState.NOT_STARTED -> {
+                binding.button.apply {
+                    text = activity.getString(R.string.main_timer_start)
+                    setOnClickListener {
+                        startTimer()
+                        configureLayoutFor()
+                    }
+                }
+
+                binding.insertLocation.text = getString(R.string.main_timer_insertLocation)
+
+                binding.input.apply {
+                    visibility = View.VISIBLE
+                    setText("")
+                    clearFocus()
+                }
+            }
+            StopwatchState.ONGOING -> {
+                binding.button.apply {
+                    text = activity.getString(R.string.main_timer_stop)
+                    setOnClickListener {
+                        stopTimer()
+                        configureLayoutFor()
+                    }
+                }
+
+                binding.input.visibility = View.INVISIBLE
+            }
+        }
+    }
+
+    private fun formatSeconds() = seconds.toString()
 
 }
