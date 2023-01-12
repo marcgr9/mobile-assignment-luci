@@ -58,6 +58,13 @@ class MainTimer: Fragment() {
         return binding.root
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        stopwatchHandler?.removeCallbacks(stopwatch)
+        stopwatchHandler = null
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
 
