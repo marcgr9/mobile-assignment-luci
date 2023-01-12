@@ -16,4 +16,9 @@
     <string name="item_delete">Remove</string>
     <string name="item_update">Update</string>
 
+    <string name="main_list_id_format">#%s</string>
+    <string name="main_list_location_label">New location:</string>
+    <string name="main_list_location_hint">esti un ratat</string>
+    <string name="main_list_update">Update location</string>
+
 </resources>

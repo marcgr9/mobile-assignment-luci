@@ -1,5 +1,6 @@
 package ro.marc.meditation.fragment
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +10,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ro.marc.meditation.MainActivity
 import ro.marc.meditation.MainActivityVM
+import ro.marc.meditation.R
+import ro.marc.meditation.Utils
 import ro.marc.meditation.adapters.SessionsAdapter
+import ro.marc.meditation.data.model.Session
+import ro.marc.meditation.databinding.CompSessionUpdateBinding
 import ro.marc.meditation.databinding.FragMainProgressBinding
 
 class MainProgress: Fragment() {
@@ -19,7 +24,17 @@ class MainProgress: Fragment() {
     private var _binding: FragMainProgressBinding? = null
     private val binding get() = _binding!!
 
-    private val sessionsAdapter = SessionsAdapter()
+    private val sessionsAdapter = SessionsAdapter(
+        {
+            attemptDelete(it)
+        },
+        {
+            showUpdateModal(it)
+        },
+    )
+
+    private var dialog: AlertDialog? = null
+    private var modalBinding: CompSessionUpdateBinding? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         activity = requireActivity() as MainActivity
@@ -34,7 +49,41 @@ class MainProgress: Fragment() {
 
         sessionsAdapter.addSessions(vm.getSessions())
 
+        initModal(inflater)
+
         return binding.root
+    }
+
+    private fun initModal(inflater: LayoutInflater) {
+        modalBinding = CompSessionUpdateBinding.inflate(inflater)
+        dialog = AlertDialog.Builder(activity).setView(modalBinding!!.root).create()
+    }
+
+    private fun showUpdateModal(session: Session) {
+        if (dialog == null) return
+
+        Utils.fillModal(modalBinding!!, session) { it, location ->
+            vm.updateLocation(it.id!!, location)
+            sessionsAdapter.clearSessions()
+            sessionsAdapter.addSessions(vm.getSessions())
+
+            modalBinding!!.location.clearFocus()
+            dialog!!.dismiss()
+        }
+
+        dialog!!.apply {
+            setOnDismissListener {
+                modalBinding!!.location.clearFocus()
+            }
+            dismiss()
+            show()
+        }
+    }
+
+    private fun attemptDelete(session: Session) {
+        vm.removeSession(session.id!!)
+        sessionsAdapter.clearSessions()
+        sessionsAdapter.addSessions(vm.getSessions())
     }
 
 }

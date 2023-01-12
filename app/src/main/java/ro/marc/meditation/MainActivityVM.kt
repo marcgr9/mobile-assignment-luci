@@ -1,6 +1,5 @@
 package ro.marc.meditation
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import ro.marc.meditation.data.model.Session
 import ro.marc.meditation.data.repo.SessionRepo
@@ -14,5 +13,13 @@ class MainActivityVM(
     }
 
     fun getSessions(): List<Session> = sessionRepo.getAll()
+
+    fun removeSession(id: Long) {
+        sessionRepo.delete(id)
+    }
+
+    fun updateLocation(id: Long, location: String) {
+        sessionRepo.updateLocation(id, location)
+    }
 
 }

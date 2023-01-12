@@ -8,7 +8,10 @@ import ro.marc.meditation.Utils
 import ro.marc.meditation.data.model.Session
 import ro.marc.meditation.databinding.CompSessionItemBinding
 
-class SessionsAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SessionsAdapter(
+    private val onDeleteClick: (Session) -> Unit,
+    private val onUpdateClick: (Session) -> Unit,
+): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var _sessions: MutableList<Session> = mutableListOf()
 
@@ -27,21 +30,21 @@ class SessionsAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val compTranItemBinding = CompSessionItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return RequestViewHolder(compTranItemBinding)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
+        = RequestViewHolder(
+            CompSessionItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        )
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as RequestViewHolder).bind(_sessions[position])
+        (holder as RequestViewHolder).bind(_sessions[position], onDeleteClick, onUpdateClick)
     }
 
-    override fun getItemCount(): Int = _sessions.size
+    override fun getItemCount(): Int = sessions.size
 
     class RequestViewHolder(private val sessionItem: CompSessionItemBinding) : RecyclerView.ViewHolder(sessionItem.root) {
 
-        fun bind(session: Session) {
-            Utils.fillSessionsCard(sessionItem, session)
+        fun bind(session: Session, onDeleteClick: (Session) -> Unit, onUpdateClick: (Session) -> Unit) {
+            Utils.fillSessionsCard(sessionItem, session, onDeleteClick, onUpdateClick)
         }
     }
     
