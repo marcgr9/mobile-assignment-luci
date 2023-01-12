@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">meditation</string>
+    <string name="main_home_title">Mindfulness</string>
+    <string name="main_home_meditate">Meditate</string>
+    <string name="main_home_progress">Progress</string>
+
+    <string name="main_timer_title">Meditate</string>
+    <string name="main_timer_start">Start</string>
+    <string name="main_timer_stop">Stop</string>
+    <string name="main_timer_insertLocation">Insert location</string>
+    <string name="main_timer_locationHint">Mata</string>
+
+</resources>
