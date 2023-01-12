@@ -11,7 +11,11 @@ object Utils {
         Toast.makeText(ctx, ctx.getString(stringResId), Toast.LENGTH_SHORT).show()
     }
 
-    fun formatSeconds(seconds: Int) = seconds.toString()
+    fun formatSeconds(seconds: Int) = String.format(
+        "%02d:%02d",
+        (seconds % 3600) / 60,
+        seconds % 60,
+    )
 
     fun fillSessionsCard(item: CompSessionItemBinding, session: Session) {
         item.time.text = formatSeconds(session.durationInSeconds)
