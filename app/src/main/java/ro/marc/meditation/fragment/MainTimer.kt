@@ -58,6 +58,15 @@ class MainTimer: Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if (stopwatchState == StopwatchState.ONGOING) {
+            stopwatchHandler = Handler(Looper.getMainLooper())
+            stopwatch.run()
+        }
+    }
+
     override fun onPause() {
         super.onPause()
 
