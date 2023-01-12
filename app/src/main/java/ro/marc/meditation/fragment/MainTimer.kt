@@ -12,6 +12,7 @@ import ro.marc.meditation.MainActivity
 import ro.marc.meditation.MainActivityVM
 import ro.marc.meditation.R
 import ro.marc.meditation.Utils
+import ro.marc.meditation.data.model.Session
 import ro.marc.meditation.databinding.FragMainTimerBinding
 
 
@@ -70,6 +71,7 @@ class MainTimer: Fragment() {
         }
 
         binding.button.apply {
+            location = binding.input.text.toString()
             text = activity.getString(R.string.main_timer_stop)
             setOnClickListener {
 
@@ -89,7 +91,16 @@ class MainTimer: Fragment() {
     private fun stopTimer() {
         stopwatchHandler?.removeCallbacks(stopwatch)
         stopwatchHandler = null
-        println(seconds)
+
+        vm.postSession(
+            Session(
+                null,
+                location,
+                seconds
+            )
+        )
+
+        location = ""
         seconds = 0
 
         stopwatchState = StopwatchState.NOT_STARTED

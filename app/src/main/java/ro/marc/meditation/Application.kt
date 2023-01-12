@@ -1,13 +1,17 @@
 package ro.marc.meditation
 
 import android.app.Application
+import androidx.room.Room
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
-import org.koin.core.module.Module
 import org.koin.dsl.module
+import ro.marc.meditation.data.db.Database
+import ro.marc.meditation.data.repo.SessionRepo
+import ro.marc.meditation.data.repo.impl.SessionRepoImpl
 
 
 class Application: Application() {
@@ -17,9 +21,26 @@ class Application: Application() {
         startKoin()
     }
 
-    private fun vmMoudles() = module {
+    private fun dbModules() = module {
+        fun provideDatabase(application: Application): Database {
+            return Room
+                .databaseBuilder(application, Database::class.java, "marc_db")
+                .fallbackToDestructiveMigration()
+                .allowMainThreadQueries()
+                .build()
+        }
+
+        single { provideDatabase(androidApplication()) }
+        single { get<Database>().sessionDAO() }
+    }
+
+    private fun repoModules() = module {
+        single<SessionRepo> { SessionRepoImpl(get()) }
+    }
+
+    private fun vmModules() = module {
         viewModel {
-            MainActivityVM()
+            MainActivityVM(get())
         }
     }
 
@@ -27,7 +48,7 @@ class Application: Application() {
         startKoin {
             androidLogger(Level.ERROR)
             androidContext(this@Application)
-            modules(vmMoudles())
+            modules(dbModules(), repoModules(), vmModules())
         }
     }
 

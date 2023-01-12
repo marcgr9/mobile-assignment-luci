@@ -1,0 +1,26 @@
+package ro.marc.meditation.data.db.dao
+
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import ro.marc.meditation.data.db.entity.SessionEntity
+
+
+@Dao
+interface SessionDAO {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun save(payment: SessionEntity)
+
+    @Query("SELECT * FROM sessions ORDER BY id DESC")
+    fun fetch(): LiveData<List<SessionEntity>>
+
+    @Query("UPDATE sessions SET location = :location WHERE id = :id")
+    fun updateLocation(id: Long, location: String)
+
+    @Query("DELETE FROM sessions WHERE id = :id")
+    fun delete(id: Long)
+
+}
