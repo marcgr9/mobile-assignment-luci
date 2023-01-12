@@ -6,6 +6,7 @@ import ro.marc.meditation.data.model.Session
 import ro.marc.meditation.databinding.CompSessionItemBinding
 import ro.marc.meditation.databinding.CompSessionUpdateBinding
 
+
 object Utils {
 
     fun toast(ctx: Context, stringResId: Int) {

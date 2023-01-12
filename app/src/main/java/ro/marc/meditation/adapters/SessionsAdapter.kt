@@ -8,6 +8,7 @@ import ro.marc.meditation.Utils
 import ro.marc.meditation.data.model.Session
 import ro.marc.meditation.databinding.CompSessionItemBinding
 
+
 class SessionsAdapter(
     private val onDeleteClick: (Session) -> Unit,
     private val onUpdateClick: (Session) -> Unit,

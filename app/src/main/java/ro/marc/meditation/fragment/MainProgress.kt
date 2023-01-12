@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ro.marc.meditation.MainActivity
 import ro.marc.meditation.MainActivityVM
-import ro.marc.meditation.R
 import ro.marc.meditation.Utils
 import ro.marc.meditation.adapters.SessionsAdapter
 import ro.marc.meditation.data.model.Session

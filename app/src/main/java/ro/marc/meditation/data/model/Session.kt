@@ -2,6 +2,7 @@ package ro.marc.meditation.data.model
 
 import ro.marc.meditation.data.db.entity.SessionEntity
 
+
 data class Session(
 
     val id: Long? = null,

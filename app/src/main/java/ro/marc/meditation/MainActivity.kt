@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 
+
 class MainActivity: AppCompatActivity() {
 
     var navController: NavController? = null
@@ -17,14 +18,6 @@ class MainActivity: AppCompatActivity() {
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.navController) as NavHostFragment
         navController = navHostFragment.navController
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-
-        println(0)
-
-        println(1)
     }
 
     fun navigateFromHomeToTimer() {
