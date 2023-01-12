@@ -8,7 +8,7 @@ interface SessionRepo {
 
     fun postSession(session: Session)
 
-    fun getAll(): LiveData<List<SessionEntity>>
+    fun getAll(): List<Session>
 
     fun updateLocation(id: Long, location: String)
 

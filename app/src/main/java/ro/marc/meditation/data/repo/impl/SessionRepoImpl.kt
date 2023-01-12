@@ -14,7 +14,7 @@ class SessionRepoImpl(
         sessionDAO.save(SessionEntity.from(session))
     }
 
-    override fun getAll(): LiveData<List<SessionEntity>> = sessionDAO.fetch()
+    override fun getAll(): List<Session> = sessionDAO.fetch().map(Session::from)
 
     override fun updateLocation(id: Long, location: String) {
         sessionDAO.updateLocation(id, location)

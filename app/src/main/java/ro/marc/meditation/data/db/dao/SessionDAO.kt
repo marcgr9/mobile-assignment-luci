@@ -15,7 +15,7 @@ interface SessionDAO {
     fun save(payment: SessionEntity)
 
     @Query("SELECT * FROM sessions ORDER BY id DESC")
-    fun fetch(): LiveData<List<SessionEntity>>
+    fun fetch(): List<SessionEntity>
 
     @Query("UPDATE sessions SET location = :location WHERE id = :id")
     fun updateLocation(id: Long, location: String)

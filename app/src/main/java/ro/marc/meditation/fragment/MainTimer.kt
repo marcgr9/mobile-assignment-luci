@@ -40,7 +40,7 @@ class MainTimer: Fragment() {
         override fun run() {
             try {
                 seconds += 1
-                binding.insertLocation.text = formatSeconds()
+                binding.insertLocation.text = Utils.formatSeconds(seconds)
             } finally {
                 stopwatchHandler!!.postDelayed(this, 1000)
             }
@@ -138,7 +138,5 @@ class MainTimer: Fragment() {
             }
         }
     }
-
-    private fun formatSeconds() = seconds.toString()
 
 }

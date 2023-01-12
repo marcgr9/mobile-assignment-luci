@@ -11,4 +11,9 @@
     <string name="main_timer_locationHint">Mata</string>
     <string name="main_timer_locationEmpty">Location can\'t be empty</string>
 
+    <string name="item_time_label">Time</string>
+    <string name="item_location_label">Location</string>
+    <string name="item_delete">Remove</string>
+    <string name="item_update">Update</string>
+
 </resources>

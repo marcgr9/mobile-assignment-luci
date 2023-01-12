@@ -12,6 +12,10 @@
         <action
             android:id="@+id/action_mainHome_to_mainTimer"
             app:destination="@id/mainTimer" />
+
+        <action
+            android:id="@+id/action_mainHome_to_mainProgress"
+            app:destination="@id/mainProgress" />
     </fragment>
 
     <fragment
@@ -22,6 +26,12 @@
         <action
             android:id="@+id/action_mainTimer_to_mainHome"
             app:destination="@id/mainHome" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mainProgress"
+        android:name="ro.marc.meditation.fragment.MainProgress"
+        android:label="MainProgress">
     </fragment>
 
 </navigation>

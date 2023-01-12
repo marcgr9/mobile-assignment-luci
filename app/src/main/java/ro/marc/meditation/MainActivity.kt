@@ -35,4 +35,8 @@ class MainActivity: AppCompatActivity() {
         navController!!.navigate(R.id.action_mainTimer_to_mainHome)
     }
 
+    fun navigateFromHomeToProgress() {
+        navController!!.navigate(R.id.action_mainHome_to_mainProgress)
+    }
+
 }
