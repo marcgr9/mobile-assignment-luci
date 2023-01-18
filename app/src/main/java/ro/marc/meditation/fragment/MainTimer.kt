@@ -8,10 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import ro.marc.meditation.MainActivity
-import ro.marc.meditation.MainActivityVM
-import ro.marc.meditation.R
-import ro.marc.meditation.Utils
+import ro.marc.meditation.*
+import ro.marc.meditation.data.api.CallStatus
+import ro.marc.meditation.data.dto.SessionDTO
 import ro.marc.meditation.data.model.Session
 import ro.marc.meditation.databinding.FragMainTimerBinding
 
@@ -108,18 +107,36 @@ class MainTimer: Fragment() {
         stopwatchHandler?.removeCallbacks(stopwatch)
         stopwatchHandler = null
 
-        vm.postSession(
-            Session(
-                null,
-                location,
-                seconds
-            )
+        val session = Session(
+            null,
+            null,
+            location,
+            seconds
         )
+        if (NetworkUtils.hasNetwork == false) {
+            vm.addLocalSession(session)
 
-        location = ""
-        seconds = 0
+            location = ""
+            seconds = 0
 
-        stopwatchState = StopwatchState.NOT_STARTED
+            stopwatchState = StopwatchState.NOT_STARTED
+            configureLayoutFor()
+            return
+        }
+
+        vm.postSession(SessionDTO.from(session)).observe(viewLifecycleOwner) {
+            if (it is CallStatus.Success) {
+                binding.button.isClickable = true
+                location = ""
+                seconds = 0
+
+                stopwatchState = StopwatchState.NOT_STARTED
+                configureLayoutFor()
+            } else {
+                binding.button.isClickable = false
+            }
+        }
+
     }
 
     private fun configureLayoutFor() {
@@ -146,7 +163,6 @@ class MainTimer: Fragment() {
                     text = activity.getString(R.string.main_timer_stop)
                     setOnClickListener {
                         stopTimer()
-                        configureLayoutFor()
                     }
                 }
 

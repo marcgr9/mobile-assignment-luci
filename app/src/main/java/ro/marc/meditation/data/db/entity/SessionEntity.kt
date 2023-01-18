@@ -10,20 +10,28 @@ import ro.marc.meditation.data.model.Session
 data class SessionEntity(
 
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    @ColumnInfo(name = "local_id")
+    val localId: Long = 0L,
+
+    val id: Long? = null,
 
     val location: String = "",
 
     @ColumnInfo(name = "duration")
     val durationInSeconds: Int = 0,
 
+    val committed: Boolean = false,
+
 ) {
 
     companion object {
 
         fun from(session: Session) = SessionEntity(
+            localId = session.localId ?: 0,
+            id = session.id,
             location = session.location,
             durationInSeconds = session.durationInSeconds,
+            committed = session.committed,
         )
 
     }

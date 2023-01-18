@@ -14,10 +14,10 @@ interface SessionsService {
     @POST("/")
     fun postSession(@Body sessionDTO: SessionDTO): Call<GenericResponseDTO<SessionDTO>>
 
-    @PATCH("/{ref}")
+    @PATCH("/{id}")
     fun changeLocation(@Path("id") id: Long, @Body body: ChangeLocationDTO): Call<GenericResponseDTO<SessionDTO>>
 
-    @DELETE("/{ref}")
+    @DELETE("/{id}")
     fun delete(@Path("id") id: Long): Call<GenericResponseDTO<Void>>
 
 }

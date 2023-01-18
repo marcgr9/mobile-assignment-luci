@@ -8,10 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import ro.marc.meditation.MainActivity
-import ro.marc.meditation.MainActivityVM
-import ro.marc.meditation.Utils
+import ro.marc.meditation.*
 import ro.marc.meditation.adapters.SessionsAdapter
+import ro.marc.meditation.data.api.CallStatus
+import ro.marc.meditation.data.dto.ChangeLocationDTO
+import ro.marc.meditation.data.dto.SessionDTO
 import ro.marc.meditation.data.model.Session
 import ro.marc.meditation.databinding.CompSessionUpdateBinding
 import ro.marc.meditation.databinding.FragMainProgressBinding
@@ -46,9 +47,11 @@ class MainProgress: Fragment() {
             layoutManager = LinearLayoutManager(activity)
         }
 
-        sessionsAdapter.addSessions(vm.getSessions())
+        loadSessions()
 
         initModal(inflater)
+
+        attachNetworkStateListener()
 
         return binding.root
     }
@@ -62,12 +65,20 @@ class MainProgress: Fragment() {
         if (dialog == null) return
 
         Utils.fillModal(modalBinding!!, session) { it, location ->
-            vm.updateLocation(it.id!!, location)
-            sessionsAdapter.clearSessions()
-            sessionsAdapter.addSessions(vm.getSessions())
+            if (NetworkUtils.hasNetwork == false) {
+                Utils.toast(activity, R.string.main_list_no_internet)
+                return@fillModal
+            }
 
-            modalBinding!!.location.clearFocus()
-            dialog!!.dismiss()
+            vm.updateLocation(session.id!!, ChangeLocationDTO(location)).observe(viewLifecycleOwner) {
+                if (it is CallStatus.Success) {
+                    vm.updateLocalLocation(session.localId!!, location)
+                    sessionsAdapter.clearSessions()
+                    sessionsAdapter.addSessions(vm.getSessions())
+                    modalBinding!!.location.clearFocus()
+                    dialog!!.dismiss()
+                }
+            }
         }
 
         dialog!!.apply {
@@ -80,9 +91,71 @@ class MainProgress: Fragment() {
     }
 
     private fun attemptDelete(session: Session) {
-        vm.removeSession(session.id!!)
-        sessionsAdapter.clearSessions()
-        sessionsAdapter.addSessions(vm.getSessions())
+        if (NetworkUtils.hasNetwork == false) {
+            Utils.toast(activity, R.string.main_list_no_internet)
+            return
+        }
+
+        vm.remove(session.id!!).observe(viewLifecycleOwner) {
+            if (it is CallStatus.Success) {
+                vm.removeLocalSession(session.localId!!)
+                sessionsAdapter.clearSessions()
+                sessionsAdapter.addSessions(vm.getSessions())
+            }
+        }
+
+    }
+
+    private fun attachNetworkStateListener() {
+        NetworkUtils.reconnectedLiveData.observe(viewLifecycleOwner) {
+            if (!it) return@observe
+
+            Utils.toast(activity, R.string.main_list_reconnected)
+            vm.getUncommitted().forEach { session ->
+                tryToPost(session)
+            }
+        }
+    }
+
+    private fun loadSessions() {
+        when (NetworkUtils.hasNetwork) {
+            true -> {
+                vm.fetchAll().observe(viewLifecycleOwner) {
+                    if (it is CallStatus.Success) {
+                        vm.clearLocal()
+
+                        it.genericResponseDTO!!.payload!!.map(Session::from).forEach {
+                            vm.addLocalSession(it)
+                            sessionsAdapter.addSessions(listOf(it))
+                        }
+
+                        vm.getUncommitted().forEach {
+                            tryToPost(it)
+                        }
+                    }
+                }
+            }
+            false -> {
+                sessionsAdapter.addSessions(vm.getSessions())
+            }
+        }
+    }
+
+    private fun tryToPost(session: Session) {
+        val dto = SessionDTO(
+            null,
+            location = session.location,
+            duration = session.durationInSeconds,
+        )
+        vm.postSession(dto).observe(viewLifecycleOwner) {
+            if (it is CallStatus.Success) {
+                vm.setCommitted(session.localId!!)
+                vm.setId(session.localId, it.genericResponseDTO!!.payload!!.id!!)
+
+                sessionsAdapter.clearSessions()
+                sessionsAdapter.addSessions(vm.getSessions())
+            }
+        }
     }
 
 }

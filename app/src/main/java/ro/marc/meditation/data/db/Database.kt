@@ -6,7 +6,7 @@ import ro.marc.meditation.data.db.dao.SessionDAO
 import ro.marc.meditation.data.db.entity.SessionEntity
 
 
-@Database(entities = [SessionEntity::class], version = 1)
+@Database(entities = [SessionEntity::class], version = 2)
 abstract class Database: RoomDatabase() {
 
     abstract fun sessionDAO(): SessionDAO
