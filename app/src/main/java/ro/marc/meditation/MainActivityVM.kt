@@ -2,25 +2,27 @@ package ro.marc.meditation
 
 import androidx.lifecycle.ViewModel
 import ro.marc.meditation.data.model.Session
-import ro.marc.meditation.data.repo.SessionRepo
+import ro.marc.meditation.data.repo.LocalSessionRepo
+import ro.marc.meditation.data.repo.SessionsRepo
 
 
 class MainActivityVM(
-    private val sessionRepo: SessionRepo,
+    private val localSessionRepo: LocalSessionRepo,
+    private val sessionsRepo: SessionsRepo,
 ): ViewModel() {
 
     fun postSession(session: Session) {
-        sessionRepo.postSession(session)
+        localSessionRepo.postSession(session)
     }
 
-    fun getSessions(): List<Session> = sessionRepo.getAll()
+    fun getSessions(): List<Session> = localSessionRepo.getAll()
 
     fun removeSession(id: Long) {
-        sessionRepo.delete(id)
+        localSessionRepo.delete(id)
     }
 
     fun updateLocation(id: Long, location: String) {
-        sessionRepo.updateLocation(id, location)
+        localSessionRepo.updateLocation(id, location)
     }
 
 }

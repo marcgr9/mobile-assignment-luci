@@ -18,6 +18,8 @@ class MainActivity: AppCompatActivity() {
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.navController) as NavHostFragment
         navController = navHostFragment.navController
+
+        NetworkUtils.init(this)
     }
 
     fun navigateFromHomeToTimer() {

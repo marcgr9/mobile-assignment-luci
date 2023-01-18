@@ -10,8 +10,10 @@ import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.koin.dsl.module
 import ro.marc.meditation.data.db.Database
-import ro.marc.meditation.data.repo.SessionRepo
-import ro.marc.meditation.data.repo.impl.SessionRepoImpl
+import ro.marc.meditation.data.repo.LocalSessionRepo
+import ro.marc.meditation.data.repo.SessionsRepo
+import ro.marc.meditation.data.repo.impl.LocalSessionRepoImpl
+import ro.marc.meditation.data.service.SessionsService
 
 
 class Application: Application() {
@@ -35,12 +37,13 @@ class Application: Application() {
     }
 
     private fun repoModules() = module {
-        single<SessionRepo> { SessionRepoImpl(get()) }
+        single<LocalSessionRepo> { LocalSessionRepoImpl(get()) }
+        single { SessionsRepo(Utils.getRetrofit("http://10.0.2.2:8080").create(SessionsService::class.java)) }
     }
 
     private fun vmModules() = module {
         viewModel {
-            MainActivityVM(get())
+            MainActivityVM(get(), get())
         }
     }
 

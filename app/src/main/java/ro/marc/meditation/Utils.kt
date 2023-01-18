@@ -2,9 +2,13 @@ package ro.marc.meditation
 
 import android.content.Context
 import android.widget.Toast
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import ro.marc.meditation.data.model.Session
 import ro.marc.meditation.databinding.CompSessionItemBinding
 import ro.marc.meditation.databinding.CompSessionUpdateBinding
+import java.util.concurrent.TimeUnit
 
 
 object Utils {
@@ -46,6 +50,15 @@ object Utils {
                 onClick(session, item.location.text.toString())
             }
         }
+    }
+
+    fun getRetrofit(baseUrl: String): Retrofit {
+        val okHttpClient = OkHttpClient.Builder()
+            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .build()
+
+        return Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).client(okHttpClient).build()
     }
 
 }

@@ -3,12 +3,12 @@ package ro.marc.meditation.data.repo.impl
 import ro.marc.meditation.data.db.dao.SessionDAO
 import ro.marc.meditation.data.db.entity.SessionEntity
 import ro.marc.meditation.data.model.Session
-import ro.marc.meditation.data.repo.SessionRepo
+import ro.marc.meditation.data.repo.LocalSessionRepo
 
 
-class SessionRepoImpl(
+class LocalSessionRepoImpl(
     private val sessionDAO: SessionDAO
-): SessionRepo {
+): LocalSessionRepo {
 
     override fun postSession(session: Session) {
         sessionDAO.save(SessionEntity.from(session))

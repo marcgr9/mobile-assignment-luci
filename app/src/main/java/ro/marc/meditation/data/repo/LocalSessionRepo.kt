@@ -3,7 +3,7 @@ package ro.marc.meditation.data.repo
 import ro.marc.meditation.data.model.Session
 
 
-interface SessionRepo {
+interface LocalSessionRepo {
 
     fun postSession(session: Session)
 
