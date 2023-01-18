@@ -33,7 +33,7 @@ data class Session(
             dto.id,
             dto.location,
             dto.duration,
-            true,
+            dto.id != null,
         )
 
     }

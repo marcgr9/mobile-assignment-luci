@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ro.marc.meditation.*
 import ro.marc.meditation.adapters.SessionsAdapter
-import ro.marc.meditation.data.api.CallStatus
+import ro.marc.meditation.data.api.CallResponse
 import ro.marc.meditation.data.dto.ChangeLocationDTO
 import ro.marc.meditation.data.dto.SessionDTO
 import ro.marc.meditation.data.model.Session
@@ -71,7 +71,7 @@ class MainProgress: Fragment() {
             }
 
             vm.updateLocation(session.id!!, ChangeLocationDTO(location)).observe(viewLifecycleOwner) {
-                if (it is CallStatus.Success) {
+                if (it is CallResponse.Success) {
                     vm.updateLocalLocation(session.localId!!, location)
                     sessionsAdapter.clearSessions()
                     sessionsAdapter.addSessions(vm.getSessions())
@@ -97,7 +97,7 @@ class MainProgress: Fragment() {
         }
 
         vm.remove(session.id!!).observe(viewLifecycleOwner) {
-            if (it is CallStatus.Success) {
+            if (it is CallResponse.Success) {
                 vm.removeLocalSession(session.localId!!)
                 sessionsAdapter.clearSessions()
                 sessionsAdapter.addSessions(vm.getSessions())
@@ -121,14 +121,14 @@ class MainProgress: Fragment() {
         when (NetworkUtils.hasNetwork) {
             true -> {
                 vm.fetchAll().observe(viewLifecycleOwner) {
-                    if (it is CallStatus.Success) {
+                    if (it is CallResponse.Success) {
                         vm.clearLocal()
 
                         it.genericResponseDTO!!.payload!!.map(Session::from).forEach {
                             vm.addLocalSession(it)
-                            sessionsAdapter.addSessions(listOf(it))
                         }
 
+                        sessionsAdapter.addSessions(vm.getSessions())
                         vm.getUncommitted().forEach {
                             tryToPost(it)
                         }
@@ -148,7 +148,7 @@ class MainProgress: Fragment() {
             duration = session.durationInSeconds,
         )
         vm.postSession(dto).observe(viewLifecycleOwner) {
-            if (it is CallStatus.Success) {
+            if (it is CallResponse.Success) {
                 vm.setCommitted(session.localId!!)
                 vm.setId(session.localId, it.genericResponseDTO!!.payload!!.id!!)
 

@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ro.marc.meditation.*
-import ro.marc.meditation.data.api.CallStatus
+import ro.marc.meditation.data.api.CallResponse
 import ro.marc.meditation.data.dto.SessionDTO
 import ro.marc.meditation.data.model.Session
 import ro.marc.meditation.databinding.FragMainTimerBinding
@@ -125,7 +125,8 @@ class MainTimer: Fragment() {
         }
 
         vm.postSession(SessionDTO.from(session)).observe(viewLifecycleOwner) {
-            if (it is CallStatus.Success) {
+            if (it is CallResponse.Success) {
+                vm.addLocalSession(Session.from(it.genericResponseDTO!!.payload!!))
                 binding.button.isClickable = true
                 location = ""
                 seconds = 0

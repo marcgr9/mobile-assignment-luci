@@ -6,18 +6,13 @@ import retrofit2.Response
 
 object CallManagement {
     
-    fun <T> manageOnResponse(response: Response<GenericResponseDTO<T>>, callStatus: MutableLiveData<CallStatus<T>>) {
-        if (!response.isSuccessful) {
-            println("Invalid request for some reason: $response")
-            return
-        }
-
-        callStatus.value = CallStatus.Success(response.body()!!)
+    fun <T> manageOnResponse(response: Response<GenericResponseDTO<T>>, callResponse: MutableLiveData<CallResponse<T>>) {
+        callResponse.value = CallResponse.Success(response.body()!!)
     }
     
-    fun <T> manageOnFailure(t: Throwable, callStatus: MutableLiveData<CallStatus<T>>) {
+    fun <T> manageOnFailure(t: Throwable, callResponse: MutableLiveData<CallResponse<T>>) {
         println("Failed, see throwable below")
         t.printStackTrace()
-        callStatus.value = CallStatus.Error()
+        callResponse.value = CallResponse.Error()
     }
 }

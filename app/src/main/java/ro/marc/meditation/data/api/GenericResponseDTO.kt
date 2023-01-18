@@ -5,6 +5,4 @@ data class GenericResponseDTO<T>(
 
     val payload: T?,
 
-    val message: BusinessMessage,
-
 )
